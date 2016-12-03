@@ -1,0 +1,30 @@
+{
+  "name": "spamazon",
+  "version": "1.0.0",
+  "description": "Buy all the spam products",
+  "main": "spamazonCustomer.js",
+  "dependencies": {
+    "cli-table": "^0.3.1",
+    "inquirer": "^1.2.3",
+    "mysql": "^2.12.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhyngoh/Spamazon.git"
+  },
+  "keywords": [
+    "Spam",
+    "Amazon",
+    "SQL"
+  ],
+  "author": "Ryan Ngoh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rhyngoh/Spamazon/issues"
+  },
+  "homepage": "https://github.com/Rhyngoh/Spamazon#readme"
+}
