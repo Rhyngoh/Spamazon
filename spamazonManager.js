@@ -162,7 +162,7 @@ var addProduct = function(){
 			}
 		}
 	}]).then(function(anew){
-		if(anew.newName.trim() === "" || anew.newDepartment.trim() === "" || anew.newPrice.trim() === "" || anew.newStock.trim() === ""){
+		if(anew.newName.trim() === "" || anew.newPrice.trim() === "" || anew.newStock.trim() === ""){
 			console.log("One of the input fields are blank. Are you sure you're a manager?");
 			console.log("-------------------");
 			addProduct();
