@@ -29,4 +29,5 @@ PRIMARY KEY (department_id)
 );
 INSERT INTO departments(department_name, over_head_costs)
 VALUES("Beauty", 696.96), ("Food", 999.99), ("Books", 808.00), ("Home", 1337.69), ("Clothes", 200.49), ("Electronics", 8008.13), ("Art", 500.01), ("Toys", 600);
+SELECT * FROM products;
 SELECT * FROM departments;
