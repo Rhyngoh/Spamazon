@@ -15,12 +15,14 @@ connection.connect(function(err){
 	if (err) throw err;
 	//console.log("connected as id " + connection.threadId);
 });
+//function to update the product sales column
 var updateProductSales = function(){
 	connection.query("SELECT * FROM departments", function(erra, res){
 		if (erra) throw erra;
 		for(var i = 0; i < res.length; i++){
 			if(res[i].product_sales === 0){
 				var zeroProfitLoser = -(res[i].over_head_costs);
+				//sql query to update department's total profit column at the input department name
 				connection.query("UPDATE departments SET ? WHERE ?", [{total_profit:zeroProfitLoser}, {department_name:res[i].department_name}], function(errr, ress){
 					if (errr) throw errr;
 				});
@@ -33,6 +35,7 @@ var updateProductSales = function(){
 		}
 	});
 }
+//function to view the table 
 var viewSales = function(){
 	var table = new Table({
 		head: ["Department ID", "Department Name", "Over Head Costs ($)", "Product Sales ($)", "Total Profit ($)"]
@@ -47,6 +50,7 @@ var viewSales = function(){
 		executivePlatinum();
 	});
 };
+//function to add a new department to the table
 var addDepartment = function(){
 	inquirer.prompt([
 	{
@@ -79,8 +83,10 @@ var addDepartment = function(){
 		} else{
 			connection.query("SELECT * FROM departments", function(err,res){
 				if (err) throw err;
+				//sql query to select all from departments where the department name matches the input
 				connection.query("SELECT * FROM departments WHERE department_name = ?", [depName.trim()], function(error, response){
 					if (error) throw error;
+					//if there is no department with that name, insert it as a new row
 					if(response[0] === undefined){
 						connection.query("INSERT INTO departments SET ?", {department_name: depName.trim(), over_head_costs: depOver.trim()}, function(erro,reso){
 							if (erro) throw erro;
@@ -93,6 +99,7 @@ var addDepartment = function(){
 							executivePlatinum();
 						});
 					} else{
+						//else, console log that there is already a department with that name
 						console.log("There is already a department with that name. Choose another name.");
 						console.log("-------------------");
 						addDepartment();
@@ -102,6 +109,7 @@ var addDepartment = function(){
 		}
 	});
 };
+//function to prompt users what to do
 var executivePlatinum = function(){
 	inquirer.prompt([
 	{
@@ -122,7 +130,8 @@ var executivePlatinum = function(){
 		}
 	})
 }
+//On start, run console logs and functions
 console.log("Greetings Executive Platinum member. How are you doing today?");
 console.log("-------------------");
-executivePlatinum();
 updateProductSales();
+executivePlatinum();
