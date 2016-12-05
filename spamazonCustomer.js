@@ -18,8 +18,8 @@ connection.connect(function(err){
 //Show table function
 var showTable = function(){
 	var table = new Table({
-		head: ["ID", "Product Name", "Department Name", "Price", "Stock Quantity"]
-		, colWidths: [5, 45, 18, 10, 18]
+		head: ["ID", "Product Name", "Department Name", "Price ($)", "Stock Quantity"]
+		, colWidths: [5, 45, 18, 13, 18]
 	});
 	//mysql query to select all of the items in the database
 	connection.query("SELECT * FROM products", function(error, response){
@@ -95,6 +95,18 @@ var customerPrompt = function(response){
 			var howMuchDat = theAmount.trim() * response[theInput-1].price;
 			console.log("Your purchase of " + theAmount.trim() + " " + response[theInput-1].product_name + "(s) was $" + howMuchDat + ".");
 			console.log("-------------------");
+			//Update the product sales on departments table
+			var updateProductSales;
+			connection.query("SELECT product_sales FROM departments WHERE ?", {department_name: response[theInput-1].department_name}, function(someErr, someRes){
+				if (someErr) throw someErr;
+				//Sum total bought this purchase and product_sales from department
+				updateProductSales = howMuchDat + someRes[0].product_sales;
+				//Update the database
+				connection.query("UPDATE departments SET ? WHERE ?", [{product_sales: updateProductSales}, {department_name: response[theInput-1].department_name}], function(err, res){
+					if (err) throw err;
+				});
+			});
+			
 			//run customerTransaction function to update the database
 			customerTransaction(remainingStock, theInput);
 		}
@@ -104,7 +116,7 @@ var customerPrompt = function(response){
 var customerTransaction = function(remainingStock, theInput){
 	//Update the products table to change the stock quantity where an item id matches the user input
 	var query = "UPDATE products SET ? WHERE ?";
-	connection.query(query, [{stock_quantity: remainingStock}, {item_id: (theInput)}], function(err, res){
+	connection.query(query, [{stock_quantity: remainingStock}, {item_id: theInput}], function(err, res){
 		if (err) throw err;
 	});
 	//prompt if they want to purchase another item

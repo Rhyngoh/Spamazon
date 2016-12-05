@@ -18,8 +18,8 @@ connection.connect(function(err){
 //Show table function
 var showTable = function(){
 	var table = new Table({
-		head: ["ID", "Product Name", "Department Name", "Price", "Stock Quantity"]
-		, colWidths: [5, 45, 18, 10, 18]
+		head: ["ID", "Product Name", "Department Name", "Price ($)", "Stock Quantity"]
+		, colWidths: [5, 45, 18, 13, 18]
 	});
 	//mysql query to select all of the items in the database
 	connection.query("SELECT * FROM products", function(error, response){
@@ -41,11 +41,12 @@ var viewLowInventory = function(){
 		//Check if there are no items below 6 inventory
 		if(managerResponse.length < 1){
 			console.log("There are no items that are low inventory");
+			console.log("-------------------");
 			doMoreManagerStuffs();
 		}else{
 			var table = new Table({
-				head: ["ID", "Product Name", "Department Name", "Price", "Stock Quantity"]
-				, colWidths: [5, 45, 18, 10, 18]
+				head: ["ID", "Product Name", "Department Name", "Price ($)", "Stock Quantity"]
+				, colWidths: [5, 45, 18, 13, 18]
 			});
 			for(var i = 0; i < managerResponse.length; i++){
 				table.push([managerResponse[i].item_id, managerResponse[i].product_name, managerResponse[i].department_name, managerResponse[i].price, managerResponse[i].stock_quantity]);		
@@ -58,6 +59,7 @@ var viewLowInventory = function(){
 }
 //function to add more stock to an existing item
 var addInventory = function(){
+	connection.query("SELECT * FROM products", function(err,res){
 	inquirer.prompt([
 	{
 		type: "input",
@@ -94,6 +96,11 @@ var addInventory = function(){
 			console.log("You put 0 into a field.. why??");
 			console.log("-------------------");
 			addInventory();
+		} else
+		if(addInput.trim() > res.length){
+			console.log("There is no item with that ID. Try again maybe?");
+			console.log("-------------------");
+			addInventory();
 		} else{
 			var query = "SELECT * FROM products WHERE ?";
 			connection.query(query, {item_id: addInput}, function(error, response){
@@ -106,10 +113,19 @@ var addInventory = function(){
 				});
 			});
 		}
+	});	
 	});
+	
 };
 //function to add new products to inventory
 var addProduct = function(){
+	var departmentArray = [];
+	connection.query("SELECT department_name FROM departments", function(error,response){
+		if (error) throw error;
+		for(var i = 0; i < response.length;i++){
+			departmentArray.push(response[i].department_name);
+		}
+	});
 	inquirer.prompt([
 	{
 		type: "input",
@@ -117,8 +133,9 @@ var addProduct = function(){
 		name: "newName"
 	},
 	{
-		type: "input",
+		type: "list",
 		message: "Which department does the item belong to?",
+		choices: departmentArray,
 		name: "newDepartment"
 	},
 	{
